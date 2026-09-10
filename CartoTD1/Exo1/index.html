@@ -4,140 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Carto TD1 — Exo 1 · Géolocalisation &amp; capteurs</title>
-<style>
-  :root {
-    --bg: #f6f7f9; --card: #ffffff; --text: #16181d; --muted: #6b7280;
-    --line: #e3e6ea; --accent: #2563eb; --accent-soft: #eef3ff;
-    --ok: #15803d; --ok-soft: #e9f7ee;
-    --err: #b91c1c; --err-soft: #fdecec;
-    --warn: #92400e; --warn-soft: #fdf3e3;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0f1115; --card: #171a21; --text: #e8eaed; --muted: #9aa1ab;
-      --line: #262b34; --accent: #6ea0ff; --accent-soft: #1b2434;
-      --ok: #6ee7a0; --ok-soft: #16241c;
-      --err: #ff9d9d; --err-soft: #2a1a1a;
-      --warn: #fbbf76; --warn-soft: #2a2116;
-    }
-  }
-
-  * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  body {
-    margin: 0; padding: 24px 16px 48px;
-    background: var(--bg); color: var(--text);
-    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  }
-  .wrap { max-width: 860px; margin: 0 auto; }
-
-  a.back {
-    display: inline-block; margin-bottom: 18px;
-    color: var(--accent); text-decoration: none; font-size: 0.9rem;
-  }
-  a.back:hover { text-decoration: underline; }
-
-  h1 { margin: 0 0 6px; font-size: 1.35rem; letter-spacing: -0.01em; }
-  .sub { margin: 0 0 20px; color: var(--muted); font-size: 0.9rem; }
-
-  /* --- Bandeau d'options --- */
-  .options {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
-    padding: 14px 16px; margin-bottom: 18px;
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-  }
-  .options label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; }
-  .options input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
-  .options .hint { font-size: 0.82rem; color: var(--muted); }
-
-  /* --- Boutons --- */
-  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-  button {
-    flex: 1 1 auto; min-height: 46px; padding: 12px 18px;
-    font: inherit; font-weight: 600; font-size: 0.92rem;
-    color: #fff; background: var(--accent);
-    border: none; border-radius: 10px; cursor: pointer;
-    transition: opacity .15s, transform .15s;
-  }
-  button.secondary { color: var(--text); background: transparent; border: 1px solid var(--line); }
-  button:hover:not(:disabled) { opacity: .88; }
-  button:active:not(:disabled) { transform: scale(.985); }
-  button:disabled { opacity: .45; cursor: not-allowed; }
-
-  /* --- Panneaux --- */
-  .panels { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
-  .panel {
-    padding: 16px; background: var(--card);
-    border: 1px solid var(--line); border-radius: 12px;
-  }
-  .panel h2 {
-    margin: 0 0 4px; font-size: 1rem;
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  }
-  .panel .api { font-size: 0.8rem; color: var(--muted); font-weight: 400; }
-  .panel .method { margin: 0 0 14px; font-size: 0.82rem; color: var(--muted); }
-
-  .badge {
-    font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
-    padding: 3px 9px; border-radius: 999px; white-space: nowrap;
-    background: var(--accent-soft); color: var(--accent);
-  }
-  .badge.idle { background: transparent; color: var(--muted); border: 1px solid var(--line); }
-  .badge.ok   { background: var(--ok-soft);  color: var(--ok); }
-  .badge.err  { background: var(--err-soft); color: var(--err); }
-
-  /* --- Tableau de données --- */
-  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-  th, td { padding: 9px 0; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
-  tr:last-child th, tr:last-child td { border-bottom: none; }
-  th { font-weight: 500; color: var(--muted); width: 46%; }
-  td { font-variant-numeric: tabular-nums; word-break: break-word; }
-  td.na { color: var(--muted); font-style: italic; }
-
-  .msg {
-    margin-top: 14px; padding: 11px 13px;
-    border-radius: 9px; font-size: 0.85rem; line-height: 1.5;
-  }
-  .msg.err  { background: var(--err-soft);  color: var(--err); }
-  .msg.warn { background: var(--warn-soft); color: var(--warn); }
-  .msg.info { background: var(--accent-soft); color: var(--accent); }
-  .msg:empty { display: none; }
-
-  /* --- Boussole --- */
-  .boussole {
-    position: relative; width: 118px; height: 118px; margin: 4px auto 18px;
-    border: 2px solid var(--line); border-radius: 50%;
-  }
-  .boussole span {
-    position: absolute; font-size: 0.7rem; font-weight: 600; color: var(--muted);
-  }
-  .boussole .n { top: 5px; left: 50%; transform: translateX(-50%); color: var(--err); }
-  .boussole .s { bottom: 5px; left: 50%; transform: translateX(-50%); }
-  .boussole .e { right: 7px; top: 50%; transform: translateY(-50%); }
-  .boussole .o { left: 7px; top: 50%; transform: translateY(-50%); }
-  .boussole::after {
-    content: ""; position: absolute; left: 50%; top: 50%;
-    width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
-    background: var(--text); border-radius: 50%;
-  }
-  .aiguille {
-    position: absolute; left: 50%; top: 50%;
-    width: 3px; height: 86px; margin: -43px 0 0 -1.5px;
-    background: linear-gradient(var(--err) 0 50%, var(--muted) 50% 100%);
-    border-radius: 2px; transform-origin: 50% 50%;
-    transition: transform .12s linear;
-  }
-
-  .note {
-    margin-top: 22px; padding: 14px 16px;
-    background: var(--card); border: 1px solid var(--line);
-    border-left: 3px solid var(--accent); border-radius: 10px;
-    font-size: 0.85rem; color: var(--muted);
-  }
-  .note b { color: var(--text); }
-  .note ul { margin: 8px 0 0; padding-left: 20px; }
-  .note li { margin-bottom: 4px; }
-</style>
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="wrap">
@@ -161,9 +29,9 @@
   </div>
 
   <div class="actions">
-    <button id="btnCurrent">Obtenir la position</button>
-    <button id="btnWatch">Démarrer le suivi</button>
-    <button id="btnStop" class="secondary" disabled>Arrêter le suivi</button>
+    <button id="btnCurrent" class="primary">Obtenir la position</button>
+    <button id="btnWatch" class="primary">Démarrer le suivi</button>
+    <button id="btnStop" disabled>Arrêter le suivi</button>
   </div>
 
   <div id="globalMsg" class="msg"></div>
@@ -193,7 +61,7 @@
   </div>
 
   <div class="actions" style="margin-top: 24px">
-    <button id="btnCapteurs" class="secondary">Activer les capteurs</button>
+    <button id="btnCapteurs">Activer les capteurs</button>
   </div>
 
   <div id="msgCapteurs" class="msg"></div>
