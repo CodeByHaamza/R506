@@ -1,0 +1,29 @@
+/* Exo 2 — spécifique à la page : carte Leaflet, légende, tableau comparatif */
+
+/* Cette page affiche une carte et des fiches côte à côte : plus large. */
+.wrap { max-width: 1100px; }
+
+#map {
+  height: 62vh; min-height: 380px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--card);
+}
+.leaflet-container { border-radius: 11px; font-family: inherit; }
+
+/* Les popups Leaflet gardent leur fond clair quel que soit le thème :
+   on fixe donc des couleurs de texte lisibles dessus. */
+.leaflet-popup-content { color: #16181d; font: 14px/1.5 system-ui, sans-serif; margin: 12px 14px; }
+.leaflet-popup-content b { display: block; margin-bottom: 3px; }
+.leaflet-popup-content .small { color: #6b7280; font-size: 0.85em; }
+
+.actions { margin: 14px 0 18px; }
+
+/* Le tableau des itinéraires compare deux fournisseurs : trois colonnes. */
+#tableRoute th { width: 40%; }
+#tableRoute td { text-align: right; }
+#tableRoute tr:first-child td { font-weight: 600; color: var(--text); }
+
+.legend { display: flex; flex-direction: column; gap: 9px; font-size: 0.86rem; }
+.legend div { display: flex; align-items: center; gap: 10px; }
+.legend .swatch { width: 26px; height: 4px; border-radius: 2px; flex-shrink: 0; }
+.legend .swatch.dot { width: 12px; height: 12px; border-radius: 50%; }

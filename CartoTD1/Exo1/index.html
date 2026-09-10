@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Carto TD1 — Exo 1 · Géolocalisation</title>
+<title>Carto TD1 — Exo 1 · Géolocalisation &amp; capteurs</title>
 <style>
   :root {
     --bg: #f6f7f9; --card: #ffffff; --text: #16181d; --muted: #6b7280;
@@ -103,6 +103,31 @@
   .msg.info { background: var(--accent-soft); color: var(--accent); }
   .msg:empty { display: none; }
 
+  /* --- Boussole --- */
+  .boussole {
+    position: relative; width: 118px; height: 118px; margin: 4px auto 18px;
+    border: 2px solid var(--line); border-radius: 50%;
+  }
+  .boussole span {
+    position: absolute; font-size: 0.7rem; font-weight: 600; color: var(--muted);
+  }
+  .boussole .n { top: 5px; left: 50%; transform: translateX(-50%); color: var(--err); }
+  .boussole .s { bottom: 5px; left: 50%; transform: translateX(-50%); }
+  .boussole .e { right: 7px; top: 50%; transform: translateY(-50%); }
+  .boussole .o { left: 7px; top: 50%; transform: translateY(-50%); }
+  .boussole::after {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
+    background: var(--text); border-radius: 50%;
+  }
+  .aiguille {
+    position: absolute; left: 50%; top: 50%;
+    width: 3px; height: 86px; margin: -43px 0 0 -1.5px;
+    background: linear-gradient(var(--err) 0 50%, var(--muted) 50% 100%);
+    border-radius: 2px; transform-origin: 50% 50%;
+    transition: transform .12s linear;
+  }
+
   .note {
     margin-top: 22px; padding: 14px 16px;
     background: var(--card); border: 1px solid var(--line);
@@ -119,10 +144,10 @@
 
   <a class="back" href="../../">&lsaquo; Retour aux exercices</a>
 
-  <h1>Exercice 1 — Géolocalisation</h1>
+  <h1>Exercice 1 — Géolocalisation et capteurs</h1>
   <p class="sub">
-    Comparaison de <code>getCurrentPosition()</code> et <code>watchPosition()</code>
-    de l'API Geolocation · R506 · Hamza Karrouchi
+    <code>getCurrentPosition()</code> et <code>watchPosition()</code>, puis
+    orientation et mouvement de l'appareil · R506 · Hamza Karrouchi
   </p>
 
   <div class="options">
@@ -167,6 +192,38 @@
 
   </div>
 
+  <div class="actions" style="margin-top: 24px">
+    <button id="btnCapteurs" class="secondary">Activer les capteurs</button>
+  </div>
+
+  <div id="msgCapteurs" class="msg"></div>
+
+  <div class="panels">
+
+    <section class="panel">
+      <h2>
+        <span>Orientation <span class="api">deviceorientation</span></span>
+        <span class="badge idle" id="badgeOrientation">Arrêté</span>
+      </h2>
+      <p class="method">Inclinaison et cap de l'appareil.</p>
+      <div class="boussole">
+        <span class="n">N</span><span class="e">E</span><span class="s">S</span><span class="o">O</span>
+        <div id="aiguille" class="aiguille"></div>
+      </div>
+      <table id="tableOrientation"></table>
+    </section>
+
+    <section class="panel">
+      <h2>
+        <span>Mouvement <span class="api">devicemotion</span></span>
+        <span class="badge idle" id="badgeMouvement">Arrêté</span>
+      </h2>
+      <p class="method">Accélération et vitesse de rotation.</p>
+      <table id="tableMouvement"></table>
+    </section>
+
+  </div>
+
   <div class="note">
     <b>Ce qu'on observe en changeant de mode</b>
     <ul>
@@ -180,6 +237,11 @@
       <li>La <b>précision</b> est un rayon en mètres : quelques mètres en GPS,
           souvent plus de cent en réseau.</li>
       <li>L'API n'autorise que le <b>HTTPS</b> ou <code>localhost</code>, jamais <code>file://</code>.</li>
+      <li>Les <b>capteurs</b> d'orientation et de mouvement n'existent que sur les
+          appareils qui en sont équipés : sur un ordinateur fixe les événements
+          ne se déclenchent jamais. À tester au smartphone.</li>
+      <li>Sur iOS, le navigateur exige un accord explicite avant de livrer ces
+          données, demandé au clic sur « Activer les capteurs ».</li>
     </ul>
   </div>
 

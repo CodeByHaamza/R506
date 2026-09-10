@@ -3,35 +3,121 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Carto TD1 — Exo 2</title>
-<style>
-  :root { --bg:#f6f7f9; --card:#fff; --text:#16181d; --muted:#6b7280; --line:#e3e6ea; --accent:#2563eb; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#0f1115; --card:#171a21; --text:#e8eaed; --muted:#9aa1ab; --line:#262b34; --accent:#6ea0ff; }
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin:0; padding:24px 16px 48px; background:var(--bg); color:var(--text);
-    font:16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  }
-  .wrap { max-width:720px; margin:0 auto; }
-  a.back { display:inline-block; margin-bottom:20px; color:var(--accent); text-decoration:none; font-size:0.9rem; }
-  a.back:hover { text-decoration:underline; }
-  h1 { margin:0 0 6px; font-size:1.35rem; }
-  .sub { margin:0 0 24px; color:var(--muted); font-size:0.9rem; }
-  #app {
-    min-height:320px; padding:18px; background:var(--card);
-    border:1px dashed var(--line); border-radius:12px; color:var(--muted);
-  }
-</style>
+<title>Carto TD1 — Exo 2 · Leaflet</title>
+
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="">
+
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="wrap">
+
   <a class="back" href="../../">&lsaquo; Retour aux exercices</a>
-  <h1>Carto TD1 — Exercice 2</h1>
-  <p class="sub">R506 · Hamza Karrouchi · BUT INFO 3 ALT</p>
-  <div id="app">Exercice a realiser.</div>
+
+  <h1>Exercice 2 — Leaflet et géolocalisation</h1>
+  <p class="sub">
+    Carte centrée sur ma position, distances orthodromiques, données GeoJSON
+    et comparaison de deux calculateurs d'itinéraire · R506 · Hamza Karrouchi
+  </p>
+
+  <div id="map"></div>
+
+  <div class="actions">
+    <button id="btnMe" class="primary">Ma position</button>
+    <button id="btnFollow">Suivre mes déplacements</button>
+    <button id="btnNiceMarseille">Nice ↔ Marseille</button>
+    <button id="btnBermudes">Triangle des Bermudes</button>
+    <button id="btnRoute">Itinéraires vers Nice</button>
+  </div>
+
+  <div id="globalMsg" class="msg"></div>
+
+  <div class="panels">
+
+    <section class="panel">
+      <h2>
+        <span>Ma position</span>
+        <span class="badge idle" id="badgePos">En attente</span>
+      </h2>
+      <table id="tablePos"></table>
+      <div id="msgPos" class="msg"></div>
+    </section>
+
+    <section class="panel">
+      <h2>
+        <span>Distances orthodromiques</span>
+        <span class="badge idle" id="badgeDist">—</span>
+      </h2>
+      <table id="tableDist"></table>
+      <div class="msg info" style="margin-top:12px">
+        Calcul par la formule de haversine (distance du grand cercle),
+        vérifié contre le <code>distanceTo()</code> de Leaflet.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>
+        <span>Données GeoJSON</span>
+        <span class="badge idle" id="badgeGeo">En attente</span>
+      </h2>
+      <table id="tableGeo"></table>
+      <div id="msgGeo" class="msg"></div>
+    </section>
+
+    <section class="panel">
+      <h2>
+        <span>Itinéraires OSRM / Valhalla</span>
+        <span class="badge idle" id="badgeRoute">Non calculé</span>
+      </h2>
+      <table id="tableRoute"></table>
+      <div id="msgRoute" class="msg"></div>
+    </section>
+
+    <section class="panel">
+      <h2><span>Légende</span></h2>
+      <div class="legend">
+        <div><span class="swatch dot" style="background:#2563eb"></span> Ma position</div>
+        <div><span class="swatch dot" style="background:#2563eb;opacity:.25;width:18px;height:18px"></span> Cercle de précision GPS</div>
+        <div><span class="swatch dot" style="background:#15803d"></span> Nice — place Masséna</div>
+        <div><span class="swatch dot" style="background:#a855f7"></span> Marseille — Vieux-Port</div>
+        <div><span class="swatch" style="background:#a855f7"></span> Segment Nice ↔ Marseille</div>
+        <div><span class="swatch" style="background:#dc2626"></span> Triangle des Bermudes</div>
+        <div><span class="swatch" style="background:#f59e0b"></span> Contour de commune (GeoJSON)</div>
+        <div><span class="swatch" style="background:#0891b2"></span> Itinéraire OSRM</div>
+        <div><span class="swatch" style="background:#db2777"></span> Itinéraire Valhalla</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="note">
+    <b>Sources</b>
+    <ul>
+      <li><b>Fonds</b> : OpenStreetMap et les styles Stamen servis par Stadia Maps.
+          Sélecteur en haut à droite de la carte.</li>
+      <li><b>Distances</b> : haversine sur une sphère de 6&nbsp;371&nbsp;km, donc à
+          vol d'oiseau — toujours plus court que la route.</li>
+      <li><b>GeoJSON</b> : contour de commune de
+          <a href="https://geo.api.gouv.fr/decoupage-administratif">geo.api.gouv.fr</a>.</li>
+      <li><b>Itinéraires</b> : les serveurs de démonstration
+          <a href="https://project-osrm.org/">OSRM</a> et
+          <a href="https://valhalla.github.io/valhalla/">Valhalla</a>, tous deux
+          bridés et parfois indisponibles. Les deux tracés sont affichés ensemble
+          pour comparaison — voir le README au sujet de Mapbox.</li>
+      <li>La géolocalisation exige <b>HTTPS</b> ou <code>localhost</code> ; sans
+          autorisation la carte reste sur Nice.</li>
+    </ul>
+  </div>
+
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
 <script src="script.js"></script>
 </body>
 </html>

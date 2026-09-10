@@ -1,8 +1,12 @@
-// Exo 1 — Géolocalisation
+// Exo 1 — Géolocalisation, orientation et mouvement
 // R506 · Hamza Karrouchi
 //
-// Affiche les données de position avec les deux méthodes de l'API Geolocation :
-// getCurrentPosition() pour une mesure ponctuelle, watchPosition() pour un suivi.
+// Position avec les deux méthodes de l'API Geolocation (getCurrentPosition pour
+// une mesure, watchPosition pour un suivi), puis les capteurs de l'appareil.
+//
+// Doc : https://developer.mozilla.org/fr/docs/Web/API/Geolocation_API
+//       https://developer.mozilla.org/en-US/docs/Web/API/Device_orientation_events/Detecting_device_orientation
+//       https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
 
 "use strict";
 
@@ -217,4 +221,152 @@ if (!("geolocation" in navigator)) {
 } else if (!window.isSecureContext) {
   message("globalMsg", "Page hors contexte sécurisé : la géolocalisation sera refusée. "
     + "Ouvrez la page en HTTPS ou via http://localhost, pas en file://.", "warn");
+}
+
+
+// Orientation et mouvement de l'appareil
+//
+// Doc : https://developer.mozilla.org/en-US/docs/Web/API/Device_orientation_events/Detecting_device_orientation
+//       https://developer.mozilla.org/en-US/docs/Web/API/DeviceOrientationEvent
+//       https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
+//
+// Ces deux événements ne se déclenchent que sur un appareil équipé de capteurs
+// (accéléromètre, gyroscope, magnétomètre) : sur un ordinateur fixe, rien n'arrive.
+
+let capteursActifs = false;
+let dernierRendu = 0;
+let recuOrientation = false;
+let recuMouvement = false;
+
+// devicemotion se déclenche jusqu'à 60 fois par seconde : inutile de redessiner
+// le tableau à chaque fois, on se limite à 10 rafraîchissements par seconde.
+function tropTot() {
+  const maintenant = performance.now();
+  if (maintenant - dernierRendu < 100) return true;
+  dernierRendu = maintenant;
+  return false;
+}
+
+function axe(v, unite, decimales) {
+  return (v === null || v === undefined) ? null : v.toFixed(decimales) + " " + unite;
+}
+
+// alpha est l'angle autour de l'axe vertical : 0 = nord si l'orientation est absolue
+function pointCardinal(alpha) {
+  const rose = ["nord", "nord-est", "est", "sud-est", "sud", "sud-ouest", "ouest", "nord-ouest"];
+  return rose[Math.round(alpha / 45) % 8];
+}
+
+function surOrientation(e) {
+  recuOrientation = true;
+  if (tropTot()) return;
+
+  // Sur iOS, webkitCompassHeading donne le cap magnétique réel ; ailleurs on
+  // reconstitue le cap à partir d'alpha (360 - alpha, le sens étant inversé).
+  const cap = typeof e.webkitCompassHeading === "number"
+    ? e.webkitCompassHeading
+    : (e.alpha === null ? null : (360 - e.alpha) % 360);
+
+  remplir($("tableOrientation"), [
+    ["alpha — rotation Z (boussole)", axe(e.alpha, "°", 1)],
+    ["beta — bascule avant/arrière", axe(e.beta, "°", 1)],
+    ["gamma — bascule gauche/droite", axe(e.gamma, "°", 1)],
+    ["Cap déduit", cap === null ? null : cap.toFixed(0) + "° (" + pointCardinal(cap) + ")"],
+    ["Référentiel", e.absolute ? "absolu (repère terrestre)" : "relatif à l'appareil"]
+  ]);
+
+  if (cap !== null) $("aiguille").style.transform = "rotate(" + (-cap) + "deg)";
+  badge("badgeOrientation", "Capteur actif", "ok");
+}
+
+function surMouvement(e) {
+  recuMouvement = true;
+  if (tropTot()) return;
+
+  const a = e.acceleration || {};
+  const g = e.accelerationIncludingGravity || {};
+  const r = e.rotationRate || {};
+
+  remplir($("tableMouvement"), [
+    ["Accélération X / Y / Z", [a.x, a.y, a.z].every(v => v === null || v === undefined)
+      ? null
+      : `${(a.x || 0).toFixed(2)} / ${(a.y || 0).toFixed(2)} / ${(a.z || 0).toFixed(2)} m/s²`],
+    ["Avec gravité X / Y / Z", [g.x, g.y, g.z].every(v => v === null || v === undefined)
+      ? null
+      : `${(g.x || 0).toFixed(2)} / ${(g.y || 0).toFixed(2)} / ${(g.z || 0).toFixed(2)} m/s²`],
+    ["Rotation α / β / γ", [r.alpha, r.beta, r.gamma].every(v => v === null || v === undefined)
+      ? null
+      : `${(r.alpha || 0).toFixed(1)} / ${(r.beta || 0).toFixed(1)} / ${(r.gamma || 0).toFixed(1)} °/s`],
+    ["Intervalle entre mesures", axe(e.interval, "ms", 0)]
+  ]);
+
+  badge("badgeMouvement", "Capteur actif", "ok");
+}
+
+// iOS 13+ refuse ces événements tant que l'utilisateur n'a pas donné son accord,
+// et l'accord ne peut être demandé que depuis un geste utilisateur (le clic).
+function demanderAccord(Evenement) {
+  if (typeof Evenement.requestPermission !== "function") return Promise.resolve("granted");
+  return Evenement.requestPermission();
+}
+
+$("btnCapteurs").addEventListener("click", () => {
+  if (capteursActifs) {
+    window.removeEventListener("deviceorientation", surOrientation);
+    window.removeEventListener("devicemotion", surMouvement);
+    capteursActifs = false;
+    $("btnCapteurs").textContent = "Activer les capteurs";
+    $("btnCapteurs").classList.remove("primary");
+    badge("badgeOrientation", "Arrêté", "idle");
+    badge("badgeMouvement", "Arrêté", "idle");
+    return;
+  }
+
+  Promise.all([
+    demanderAccord(window.DeviceOrientationEvent || {}),
+    demanderAccord(window.DeviceMotionEvent || {})
+  ])
+    .then(reponses => {
+      if (reponses.includes("denied")) {
+        message("msgCapteurs", "Accès aux capteurs refusé. Rechargez la page pour "
+          + "que le navigateur repose la question.", "err");
+        return;
+      }
+
+      window.addEventListener("deviceorientation", surOrientation);
+      window.addEventListener("devicemotion", surMouvement);
+      capteursActifs = true;
+      recuOrientation = false;
+      recuMouvement = false;
+
+      $("btnCapteurs").textContent = "Arrêter les capteurs";
+      $("btnCapteurs").classList.add("primary");
+      badge("badgeOrientation", "En écoute…");
+      badge("badgeMouvement", "En écoute…");
+      message("msgCapteurs", "Bougez et inclinez l'appareil.", "info");
+
+      // Les événements existent partout, mais restent muets sans capteurs :
+      // on ne peut le savoir qu'en attendant un peu.
+      setTimeout(() => {
+        if (!capteursActifs) return;
+        const absents = [];
+        if (!recuOrientation) absents.push("orientation");
+        if (!recuMouvement) absents.push("mouvement");
+        if (!absents.length) return;
+
+        message("msgCapteurs", "Aucune donnée de " + absents.join(" ni de ")
+          + " reçue : cet appareil n'a probablement pas les capteurs. "
+          + "À tester depuis un smartphone.", "warn");
+        absents.forEach(nom => badge(
+          nom === "orientation" ? "badgeOrientation" : "badgeMouvement",
+          "Indisponible", "err"
+        ));
+      }, 2000);
+    })
+    .catch(e => message("msgCapteurs", "Activation impossible : " + e.message, "err"));
+});
+
+if (!window.DeviceOrientationEvent && !window.DeviceMotionEvent) {
+  message("msgCapteurs", "Ce navigateur ne connaît ni DeviceOrientationEvent ni DeviceMotionEvent.", "err");
+  $("btnCapteurs").disabled = true;
 }
