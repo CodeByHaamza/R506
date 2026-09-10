@@ -5,9 +5,12 @@ GitHub Pages afin que les exercices soient testables directement au smartphone.
 
 ## 🌐 Site en ligne
 
-**https://hamzakarrouchi.github.io/**
+**https://hamzakarrouchi.github.io/R506/**
 
-La page d'accueil (`index.html`) sert d'interface d'accès à l'ensemble des exercices.
+La page d'accueil (`index.html`) sert d'interface d'accès à l'ensemble des exercices,
+et renvoie vers ce dépôt pour la consultation du code.
+
+L'adresse courte **https://hamzakarrouchi.github.io/** redirige également vers ce site.
 
 ## Étudiant
 
@@ -81,8 +84,8 @@ Puis ouvrir <http://localhost:8000/> dans Firefox ou Chrome.
 
 ## Déploiement
 
-Le dépôt est un *user site* GitHub Pages (`HamzaKarrouchi.github.io`) : chaque
-push sur `main` republie automatiquement le site, sans configuration.
+Le site est publié par GitHub Pages depuis la branche `main` (racine du dépôt) :
+chaque push republie automatiquement le site.
 
 ```bash
 git add .
