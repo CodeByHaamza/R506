@@ -11,7 +11,7 @@ Dépôt de travaux pratiques pour la ressource **R506** du semestre 5.
 | **Classe** | BUT INFO 3 — Alternance |
 | **Semestre** | S5 |
 | **Ressource** | R506 — Sensibilisation à la programmation multimédia |
-| **Année universitaire** | 2025 – 2026 |
+| **Année universitaire** | 2026 – 2027 |
 
 ## À propos de la ressource
 
@@ -26,9 +26,6 @@ rendu graphique et traitement de contenus média par le code.
 | TD1 | *à compléter* | [`td1/`](td1/) | [ ] |
 | TD2 | — | — | [ ] |
 | TD3 | — | — | [ ] |
-| TD4 | — | — | [ ] |
-| TD5 | — | — | [ ] |
-| TD6 | — | — | [ ] |
 
 Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé
 
