@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R506 — Hamza Karrouchi</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --text: #16181d;
+    --muted: #6b7280;
+    --line: #e3e6ea;
+    --accent: #2563eb;
+    --accent-soft: #eef3ff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1115;
+      --card: #171a21;
+      --text: #e8eaed;
+      --muted: #9aa1ab;
+      --line: #262b34;
+      --accent: #6ea0ff;
+      --accent-soft: #1b2434;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 24px 16px 48px;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  header { margin-bottom: 28px; }
+  h1 { margin: 0 0 6px; font-size: 1.5rem; letter-spacing: -0.01em; }
+  .sub { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .meta {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 6px 18px;
+    font-size: 0.875rem; color: var(--muted);
+  }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  section { margin-bottom: 26px; }
+  h2 {
+    margin: 0 0 12px; font-size: 1.05rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .tag {
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.04em; padding: 3px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .tag.todo { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+
+  .grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+
+  a.exo {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    min-height: 60px; padding: 14px 16px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    color: inherit; text-decoration: none;
+    transition: border-color .15s, transform .15s;
+  }
+  a.exo:hover, a.exo:focus-visible { border-color: var(--accent); }
+  a.exo:active { transform: scale(0.985); }
+  a.exo .name { font-weight: 600; }
+  a.exo .desc { display: block; font-weight: 400; font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+  a.exo .arrow { color: var(--muted); flex-shrink: 0; }
+
+  .empty {
+    padding: 18px 16px; border: 1px dashed var(--line); border-radius: 12px;
+    color: var(--muted); font-size: 0.9rem;
+  }
+
+  footer {
+    margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
+    font-size: 0.85rem; color: var(--muted);
+  }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>R506 — Sensibilisation à la programmation multimédia</h1>
+    <p class="sub">Exercices de cartographie et de rendu 3D</p>
+    <div class="meta">
+      <span><b>Hamza Karrouchi</b></span>
+      <span>BUT INFO 3 — Alternance</span>
+      <span>Semestre 5</span>
+      <span>2026 – 2027</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Carto TD1 <span class="tag">En cours</span></h2>
+    <div class="grid">
+      <a class="exo" href="CartoTD1/Exo1/">
+        <span><span class="name">Exercice 1</span><span class="desc">CartoTD1 / Exo1</span></span>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+      <a class="exo" href="CartoTD1/Exo2/">
+        <span><span class="name">Exercice 2</span><span class="desc">CartoTD1 / Exo2</span></span>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+      <a class="exo" href="CartoTD1/Exo3/">
+        <span><span class="name">Exercice 3</span><span class="desc">CartoTD1 / Exo3</span></span>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Carto TD2 <span class="tag todo">À venir</span></h2>
+    <div class="grid">
+      <a class="exo" href="CartoTD2/Exo1/">
+        <span><span class="name">Exercice 1</span><span class="desc">CartoTD2 / Exo1</span></span>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+      <a class="exo" href="CartoTD2/Exo2/">
+        <span><span class="name">Exercice 2</span><span class="desc">CartoTD2 / Exo2</span></span>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+      <a class="exo" href="CartoTD2/Exo3/">
+        <span><span class="name">Exercice 3</span><span class="desc">CartoTD2 / Exo3</span></span>
+        <span class="arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Carto TD3 <span class="tag todo">À venir</span></h2>
+    <p class="empty">Les exercices seront ajoutés ici dès que le sujet sera distribué.</p>
+  </section>
+
+  <footer>
+    Code source :
+    <a href="https://github.com/HamzaKarrouchi/HamzaKarrouchi.github.io">github.com/HamzaKarrouchi</a>
+  </footer>
+
+</div>
+</body>
+</html>
