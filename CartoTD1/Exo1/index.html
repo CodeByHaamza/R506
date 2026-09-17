@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Carto TD1 — Exo 1 · Géolocalisation &amp; capteurs</title>
+<title>TD1 - Exo 1 - Géolocalisation</title>
 <link rel="stylesheet" href="../../assets/style.css">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -12,20 +12,15 @@
 
   <a class="back" href="../../">&lsaquo; Retour aux exercices</a>
 
-  <h1>Exercice 1 — Géolocalisation et capteurs</h1>
-  <p class="sub">
-    <code>getCurrentPosition()</code> et <code>watchPosition()</code>, puis
-    orientation et mouvement de l'appareil · R506 · Hamza Karrouchi
-  </p>
+  <h1>Exercice 1 - Géolocalisation</h1>
+  <p class="sub"><code>getCurrentPosition()</code> et <code>watchPosition()</code>, puis les capteurs du téléphone · Hamza Karrouchi</p>
 
   <div class="options">
     <label>
       <input type="checkbox" id="highAccuracy" checked>
       <span>Haute précision (GPS)</span>
     </label>
-    <span class="hint">
-      Décochée, la position vient du Wi-Fi ou de la 4G.
-    </span>
+    <span class="hint">Décochée : position par wifi / 4G</span>
   </div>
 
   <div class="actions">
@@ -39,21 +34,15 @@
   <div class="panels">
 
     <section class="panel">
-      <h2>
-        <span>Position ponctuelle <span class="api">getCurrentPosition()</span></span>
-        <span class="badge idle" id="badgeCurrent">En attente</span>
-      </h2>
-      <p class="method">Une seule mesure, à la demande.</p>
+      <h2>getCurrentPosition()</h2>
+      <p class="method">Une seule mesure.</p>
       <table id="tableCurrent"></table>
       <div id="msgCurrent" class="msg"></div>
     </section>
 
     <section class="panel">
-      <h2>
-        <span>Suivi continu <span class="api">watchPosition()</span></span>
-        <span class="badge idle" id="badgeWatch">Arrêté</span>
-      </h2>
-      <p class="method">Rappel automatique à chaque déplacement détecté.</p>
+      <h2>watchPosition()</h2>
+      <p class="method">Mise à jour à chaque déplacement.</p>
       <table id="tableWatch"></table>
       <div id="msgWatch" class="msg"></div>
     </section>
@@ -63,17 +52,12 @@
   <div class="actions" style="margin-top: 24px">
     <button id="btnCapteurs">Activer les capteurs</button>
   </div>
-
   <div id="msgCapteurs" class="msg"></div>
 
   <div class="panels">
 
     <section class="panel">
-      <h2>
-        <span>Orientation <span class="api">deviceorientation</span></span>
-        <span class="badge idle" id="badgeOrientation">Arrêté</span>
-      </h2>
-      <p class="method">Inclinaison et cap de l'appareil.</p>
+      <h2>deviceorientation</h2>
       <div class="boussole">
         <span class="n">N</span><span class="e">E</span><span class="s">S</span><span class="o">O</span>
         <div id="aiguille" class="aiguille"></div>
@@ -82,34 +66,18 @@
     </section>
 
     <section class="panel">
-      <h2>
-        <span>Mouvement <span class="api">devicemotion</span></span>
-        <span class="badge idle" id="badgeMouvement">Arrêté</span>
-      </h2>
-      <p class="method">Accélération et vitesse de rotation.</p>
+      <h2>devicemotion</h2>
       <table id="tableMouvement"></table>
     </section>
 
   </div>
 
   <div class="note">
-    <b>Ce qu'on observe en changeant de mode</b>
     <ul>
-      <li><b>Altitude (GPS)</b> et <b>vitesse</b> ne sont renseignées que par le GPS.
-          En Wi-Fi ou en 4G la position est déduite des antennes, ces champs restent vides.</li>
-      <li><b>Altitude du terrain</b> est une valeur de secours : elle ne vient pas du
-          GPS mais du modèle de terrain d'<a href="https://open-meteo.com/en/docs/elevation-api">Open-Meteo</a>,
-          interrogé avec la latitude et la longitude. Elle donne l'altitude du sol,
-          pas celle de l'appareil.</li>
-      <li>La vitesse reste à <code>null</code> ou <code>0</code> tant qu'on ne bouge pas.</li>
-      <li>La <b>précision</b> est un rayon en mètres : quelques mètres en GPS,
-          souvent plus de cent en réseau.</li>
-      <li>L'API n'autorise que le <b>HTTPS</b> ou <code>localhost</code>, jamais <code>file://</code>.</li>
-      <li>Les <b>capteurs</b> d'orientation et de mouvement n'existent que sur les
-          appareils qui en sont équipés : sur un ordinateur fixe les événements
-          ne se déclenchent jamais. À tester au smartphone.</li>
-      <li>Sur iOS, le navigateur exige un accord explicite avant de livrer ces
-          données, demandé au clic sur « Activer les capteurs ».</li>
+      <li>L'altitude et la vitesse ne sont données que par le GPS. En wifi / 4G elles restent à <code>null</code>, j'affiche alors l'altitude du terrain via l'API Open-Meteo.</li>
+      <li>La précision est un rayon en mètres : quelques mètres en GPS, souvent plus de 100 m en réseau.</li>
+      <li>La géolocalisation ne marche qu'en HTTPS ou sur localhost, pas en <code>file://</code>.</li>
+      <li>Les capteurs ne fonctionnent que sur smartphone (iOS demande une autorisation au clic).</li>
     </ul>
   </div>
 

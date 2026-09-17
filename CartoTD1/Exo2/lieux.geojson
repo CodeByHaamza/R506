@@ -1,0 +1,35 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "nom": "IUT Nice Côte d'Azur - site de Sophia Antipolis", "type": "université" },
+      "geometry": { "type": "Point", "coordinates": [7.0717, 43.6157] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nom": "Gare de Nice-Ville", "type": "gare" },
+      "geometry": { "type": "Point", "coordinates": [7.2619, 43.7045] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nom": "Aéroport Nice Côte d'Azur", "type": "aéroport" },
+      "geometry": { "type": "Point", "coordinates": [7.2159, 43.6584] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nom": "Colline du Château", "type": "point de vue" },
+      "geometry": { "type": "Point", "coordinates": [7.2795, 43.6952] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nom": "Allianz Riviera", "type": "stade" },
+      "geometry": { "type": "Point", "coordinates": [7.1926, 43.7053] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nom": "Promenade des Anglais", "type": "promenade" },
+      "geometry": { "type": "Point", "coordinates": [7.2500, 43.6950] }
+    }
+  ]
+}

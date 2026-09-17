@@ -33,7 +33,7 @@ animation, interaction et adaptation aux terminaux mobiles.
 
 | TD | Sujet | Dossier | État |
 |---|---|---|---|
-| TD1 | Géolocalisation et cartographie Leaflet | [`CartoTD1/`](CartoTD1/) | [~] |
+| TD1 | Géolocalisation et cartographie Leaflet | [`CartoTD1/`](CartoTD1/) | [x] |
 | TD2 | *à compléter* | [`CartoTD2/`](CartoTD2/) | [ ] |
 | TD3 | *à compléter* | [`CartoTD3/`](CartoTD3/) | [ ] |
 
@@ -43,9 +43,8 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé
 
 | Exercice | Sujet | État |
 |---|---|---|
-| [Exo 1](CartoTD1/Exo1/) | Géolocalisation (`getCurrentPosition`, `watchPosition`), orientation et mouvement de l'appareil | [x] |
-| [Exo 2](CartoTD1/Exo2/) | Leaflet : carte, marqueurs, distances, GeoJSON, itinéraires | [x] |
-| [Exo 3](CartoTD1/Exo3/) | *en attente du sujet* | [ ] |
+| [Exo 1](CartoTD1/Exo1/) | Géolocalisation : `getCurrentPosition`, `watchPosition`, GPS vs réseau, capteurs du téléphone | [x] |
+| [Exo 2](CartoTD1/Exo2/) | Leaflet : carte OSM / Stamen, marqueurs, triangle des Bermudes, cercle de précision, distances, GeoJSON (fichier local + API geo), itinéraires OSRM et Valhalla | [x] |
 
 ## Choix techniques
 
@@ -108,8 +107,7 @@ Les liens vers la documentation des API utilisées, en majorité
 │   └── style.css       Styles communs aux pages d'exercices
 ├── CartoTD1/
 │   ├── Exo1/           index.html + script.js + style.css
-│   ├── Exo2/
-│   └── Exo3/
+│   └── Exo2/           + lieux.geojson
 ├── CartoTD2/
 │   ├── Exo1/
 │   ├── Exo2/
