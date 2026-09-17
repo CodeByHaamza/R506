@@ -8,9 +8,6 @@ const STADIA_KEY = "eed6a6b4-d171-43e4-8215-e5f8490b4245"; // clé donnée dans 
 
 const el = id => document.getElementById(id);
 
-
-// ---- carte et fonds de carte ----
-
 const map = L.map("map").setView(NICE, 12);
 
 const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
