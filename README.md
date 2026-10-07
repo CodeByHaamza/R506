@@ -34,7 +34,7 @@ animation, interaction et adaptation aux terminaux mobiles.
 | TD | Sujet | Dossier | État |
 |---|---|---|---|
 | TD1 | Géolocalisation et cartographie Leaflet | [`CartoTD1/`](CartoTD1/) | [x] |
-| TD2 | *à compléter* | [`CartoTD2/`](CartoTD2/) | [ ] |
+| TD2 | 3D : Three.js et Babylon.js | [`CartoTD2/`](CartoTD2/) | [~] |
 | TD3 | *à compléter* | [`CartoTD3/`](CartoTD3/) | [ ] |
 
 Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé
@@ -45,6 +45,13 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé
 |---|---|---|
 | [Exo 1](CartoTD1/Exo1/) | Géolocalisation : `getCurrentPosition`, `watchPosition`, GPS vs réseau, capteurs du téléphone | [x] |
 | [Exo 2](CartoTD1/Exo2/) | Leaflet : carte OSM / Stamen, marqueurs, triangle des Bermudes, cercle de précision, distances, GeoJSON (fichier local + API geo), itinéraires OSRM et Valhalla | [x] |
+
+### Détail du TD2
+
+| Exercice | Sujet | État |
+|---|---|---|
+| [Exo 1](CartoTD2/Exo1/) | Three.js : scène, caméra, lumières, renderer, cube texturé, modèles glTF | [x] |
+| Exo 2 | Babylon.js | [ ] |
 
 ## Choix techniques
 
@@ -90,6 +97,22 @@ tableaux, boutons), et chaque exercice ajoute son propre `style.css` pour ce qui
 lui est particulier — la boussole pour l'Exo 1, la carte et la légende pour
 l'Exo 2.
 
+### Crédits des modèles 3D
+
+Les modèles de l'Exo 1 du TD2 viennent de [Sketchfab](https://sketchfab.com) et sont
+sous licence [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/) (le fichier
+`license.txt` de chacun est conservé dans son dossier d'`assets/`).
+
+- [Joker](https://sketchfab.com/3d-models/joker-persona-5-playstation-4-2b13af94c70f41dc865e691a3002bdd7) et
+  [Morgana](https://sketchfab.com/3d-models/morgana-persona-5-playstation-4-c39122925d17434b9702714397045ae3)
+  par [雨宮レン](https://sketchfab.com/oscar3dmodel)
+- [Makoto Niijima](https://sketchfab.com/3d-models/makoto-niijima-casual-persona-5-strikers-cf5ec240adb649309b3628b00058ec98)
+  par [jonshipman](https://sketchfab.com/jonshipman)
+- [Futaba Sakura](https://sketchfab.com/3d-models/persona-5-futaba-sakura-cbd569ca3c0e43eaa9aaa03bad068d27)
+  par [sweetsnowdk64](https://sketchfab.com/sweetsnowdk64)
+- [Walter White](https://sketchfab.com/3d-models/walter-white-breaking-bad-f186e48c48dc461c94145f848755482f)
+  par [Roberto Domínguez](https://sketchfab.com/vmmaniac), allégé (177 Mo vers 6 Mo,
+  maillage simplifié, textures en WebP, compression meshopt) pour pouvoir être publié sur GitHub.
 ### Documentation
 
 Les liens vers la documentation des API utilisées, en majorité
@@ -109,9 +132,8 @@ Les liens vers la documentation des API utilisées, en majorité
 │   ├── Exo1/           index.html + script.js + style.css
 │   └── Exo2/           + lieux.geojson
 ├── CartoTD2/
-│   ├── Exo1/
-│   ├── Exo2/
-│   └── Exo3/
+│   ├── Exo1/           index.html + script.js + style.css
+│   └── Exo2/
 └── CartoTD3/
 ```
 

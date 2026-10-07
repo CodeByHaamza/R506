@@ -1,0 +1,11 @@
+Model Information:
+* title:	Walter White - Breaking Bad
+* source:	https://sketchfab.com/3d-models/walter-white-breaking-bad-f186e48c48dc461c94145f848755482f
+* author:	Roberto Domínguez (https://sketchfab.com/vmmaniac)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Walter White - Breaking Bad" (https://sketchfab.com/3d-models/walter-white-breaking-bad-f186e48c48dc461c94145f848755482f) by Roberto Domínguez (https://sketchfab.com/vmmaniac) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
