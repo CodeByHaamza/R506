@@ -34,7 +34,7 @@ animation, interaction et adaptation aux terminaux mobiles.
 | TD | Sujet | Dossier | État |
 |---|---|---|---|
 | TD1 | Géolocalisation et cartographie Leaflet | [`CartoTD1/`](CartoTD1/) | [x] |
-| TD2 | 3D : Three.js et Babylon.js | [`CartoTD2/`](CartoTD2/) | [~] |
+| TD2 | 3D avec Three.js | [`CartoTD2/`](CartoTD2/) | [x] |
 | TD3 | *à compléter* | [`CartoTD3/`](CartoTD3/) | [ ] |
 
 Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé
@@ -50,8 +50,8 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé
 
 | Exercice | Sujet | État |
 |---|---|---|
-| [Exo 1](CartoTD2/Exo1/) | Three.js : scène, caméra, lumières, renderer, cube texturé, modèles glTF | [x] |
-| Exo 2 | Babylon.js | [ ] |
+| [Exo 1](CartoTD2/Exo1/) | Three.js : scène, caméra, lumières, renderer, cube texturé, modèles glTF, capteurs du téléphone, neige et pluie | [x] |
+| [Exo 2](CartoTD2/Exo2/) | Three.js : globe texturé, conversion lat/lon vers XYZ, ma position, drapeaux de plusieurs pays | [x] |
 
 ## Choix techniques
 
@@ -89,6 +89,23 @@ l'intérêt de la comparaison. Sur Marseille → Nice :
 La clé Stadia Maps, elle, est restée dans le code : elle sert aux fonds de carte
 Stamen demandés par le sujet, et son format n'est pas reconnu comme un secret.
 
+### Pourquoi pas l'API restcountries.com directement
+
+Le sujet de l'Exo 2 du TD2 demande les positions des pays via restcountries.com.
+L'ancienne API (v2 et v3.1) a été arrêtée : elle répond maintenant une erreur de
+dépréciation. La nouvelle (v5) **exige une clé d'API**, et pour l'appeler depuis
+un navigateur il faut déclarer le domaine de la page dans les réglages de la clé.
+Une clé dans un dépôt public n'a pas sa place (même problème que le jeton Mapbox
+du TD1), donc je n'en utilise pas.
+
+À la place :
+
+- les **coordonnées** viennent de [mledoze/countries](https://github.com/mledoze/countries)
+  (licence ODbL), le jeu de données sur lequel s'appuyait restcountries, chargé avec `fetch` ;
+- les **drapeaux** viennent de [flagcdn.com](https://flagcdn.com) : le CDN de drapeaux de
+  restcountries n'envoie pas d'en-tête CORS, WebGL refuserait ses images comme texture.
+
+La texture de la Terre vient des exemples de [three.js](https://github.com/mrdoob/three.js/tree/dev/examples/textures/planets).
 ### Structure des feuilles de style
 
 Les deux exercices partageaient l'essentiel de leur CSS. Le commun est dans
@@ -132,8 +149,8 @@ Les liens vers la documentation des API utilisées, en majorité
 │   ├── Exo1/           index.html + script.js + style.css
 │   └── Exo2/           + lieux.geojson
 ├── CartoTD2/
-│   ├── Exo1/           index.html + script.js + style.css
-│   └── Exo2/
+│   ├── Exo1/           index.html + script.js + style.css + assets/
+│   └── Exo2/           index.html + script.js + style.css + assets/
 └── CartoTD3/
 ```
 

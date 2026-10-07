@@ -75,6 +75,10 @@ function creerTexture(type) {
 }
 
 
+// tout est dans un groupe : c'est lui qu'on incline avec le téléphone
+const monde = new THREE.Group();
+scene.add(monde);
+
 // ---- le cube ----
 
 // un matériau par face, dans l'ordre : droite, gauche, dessus, dessous, devant, derrière
@@ -91,7 +95,7 @@ const materiaux = [
 const cube = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), materiaux);
 cube.rotation.x = 0.4;
 cube.position.x = -2.5;
-scene.add(cube);
+monde.add(cube);
 
 
 // ---- modèles 3D (glTF) ----
@@ -111,7 +115,7 @@ loader.setMeshoptDecoder(MeshoptDecoder);
 
 const pivot = new THREE.Group();
 pivot.position.x = 2.5;
-scene.add(pivot);
+monde.add(pivot);
 
 let courant = null; // clé du modèle affiché
 let mixer = null;   // joue l'animation du modèle, s'il en a une
@@ -218,6 +222,65 @@ boutonMeteo.addEventListener("click", () => {
 });
 
 
+// ---- capteurs du smartphone ----
+// https://developer.mozilla.org/en-US/docs/Web/API/Device_orientation_events
+
+const cible = { x: 0, y: 0 };  // inclinaison voulue du groupe, en radians
+let vitesseSaut = 0;
+let capteursActifs = false;
+const boutonCapteurs = document.getElementById("capteurs");
+
+function surOrientation(e) {
+  if (e.beta === null) return;
+  // beta : avant / arrière, gamma : gauche / droite, en degrés
+  // on suppose le téléphone tenu incliné à ~45°
+  cible.x = THREE.MathUtils.clamp((e.beta - 45) / 90, -1, 1) * 0.8;
+  cible.y = THREE.MathUtils.clamp(e.gamma / 90, -1, 1);
+}
+
+function surMouvement(e) {
+  const a = e.acceleration;
+  if (!a || a.x === null) return;
+  // acceleration est sans la gravité : une secousse dépasse vite 10 m/s²
+  if (Math.hypot(a.x, a.y, a.z) > 10 && monde.position.y === 0) vitesseSaut = 6;
+}
+
+// sur iOS il faut demander l'autorisation, depuis un clic
+function demanderPermission() {
+  const evenements = [window.DeviceOrientationEvent, window.DeviceMotionEvent];
+  return Promise.all(evenements.map(E =>
+    E && typeof E.requestPermission === "function" ? E.requestPermission() : "granted"
+  ));
+}
+
+boutonCapteurs.addEventListener("click", () => {
+  if (capteursActifs) {
+    window.removeEventListener("deviceorientation", surOrientation);
+    window.removeEventListener("devicemotion", surMouvement);
+    capteursActifs = false;
+    boutonCapteurs.textContent = "Activer les capteurs";
+    return;
+  }
+
+  demanderPermission().then(reponses => {
+    if (reponses.includes("denied")) {
+      boutonCapteurs.textContent = "Capteurs refusés";
+      return;
+    }
+    window.addEventListener("deviceorientation", surOrientation);
+    window.addEventListener("devicemotion", surMouvement);
+    capteursActifs = true;
+    boutonCapteurs.textContent = "Arrêter les capteurs";
+  });
+});
+
+// sur PC, la souris incline la scène à la place du téléphone
+window.addEventListener("pointermove", e => {
+  if (capteursActifs) return;
+  cible.y = (e.clientX / window.innerWidth - 0.5) * 1.5;
+  cible.x = (e.clientY / window.innerHeight - 0.5) * 0.8;
+});
+
 // ---- clic sur Walter White : on joue le son ----
 // https://threejs.org/manual/#en/picking
 
@@ -257,6 +320,18 @@ function animate(temps) {
   cube.rotation.y += dt * 0.6;
   pivot.rotation.y += dt * 0.4;
   if (mixer) mixer.update(dt);
+
+  // le groupe rejoint doucement l'inclinaison voulue
+  monde.rotation.x += (cible.x - monde.rotation.x) * 0.1;
+  monde.rotation.y += (cible.y - monde.rotation.y) * 0.1;
+
+  // saut quand on secoue le téléphone
+  vitesseSaut -= 18 * dt;
+  monde.position.y += vitesseSaut * dt;
+  if (monde.position.y < 0) {
+    monde.position.y = 0;
+    vitesseSaut = 0;
+  }
 
   if (meteo > 0) {
     const vitesse = meteo === 1 ? 1 : 12;
