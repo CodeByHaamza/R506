@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TD2 - Exo 2 - Globe Three.js</title>
+<title>TD3 - Exo 1 - Globe et Leaflet</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link rel="stylesheet" href="style.css">
 
 <script type="importmap">
@@ -17,22 +20,25 @@
 </head>
 <body>
 
-<div id="scene"></div>
+<div class="ecran">
+  <div id="scene"></div>
+  <div id="map"></div>
+</div>
 
 <div class="bandeau">
   <a href="../../">&lsaquo; Retour aux exercices</a>
-  <h1>Exercice 2 - Globe Three.js</h1>
+  <h1>Exercice 1 - Globe et Leaflet</h1>
   <button id="btnMoi">Ma position</button>
   <p id="infos"></p>
   <p id="pays"></p>
-  <p class="credits">
-    Texture : exemples de <a href="https://threejs.org">three.js</a>.
-    Pays : <a href="https://github.com/mledoze/countries">mledoze/countries</a> (ODbL),
-    les données qu'utilisait <a href="https://restcountries.com">restcountries</a>.
-    Drapeaux : <a href="https://flagcdn.com">flagcdn.com</a>.
+  <p class="aide">
+    Clic sur la carte ou un drapeau de la carte : le globe tourne vers cet endroit.
+    Clic sur le globe ou un drapeau du globe : la carte s'y recentre.
   </p>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script type="module" src="script.js"></script>
 </body>
 </html>

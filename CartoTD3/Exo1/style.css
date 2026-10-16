@@ -1,0 +1,87 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #02030a;
+  font-family: system-ui, sans-serif;
+}
+
+/* le globe à gauche, la carte à droite ; l'un au-dessus de l'autre en portrait */
+.ecran {
+  display: flex;
+  height: 100%;
+}
+
+#scene, #map {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (orientation: portrait) {
+  .ecran { flex-direction: column; }
+}
+
+#scene { position: relative; }
+
+#scene canvas {
+  display: block;
+  touch-action: none;
+}
+
+#map { border-left: 1px solid #262b34; }
+
+@media (orientation: portrait) {
+  #map { border-left: none; border-top: 1px solid #262b34; }
+}
+
+/* le popup Leaflet reste lisible */
+.leaflet-popup-content { font: 13px/1.45 system-ui, sans-serif; }
+.leaflet-popup-content img { vertical-align: -2px; margin-right: 4px; }
+
+/* drapeaux de la carte : l'image est centrée sur le point */
+.drapeau img {
+  display: block;
+  transform: translate(-50%, -50%);
+  border: 1px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* petit bandeau par-dessus le globe */
+.bandeau {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: 320px;
+  padding: 10px 14px;
+  color: #e8eaed;
+  background: rgba(15, 17, 21, 0.75);
+  border-radius: 10px;
+  font-size: 14px;
+  z-index: 1000; /* au-dessus de la carte Leaflet */
+}
+
+.bandeau a { color: #6ea0ff; text-decoration: none; font-size: 13px; }
+.bandeau h1 { margin: 4px 0 8px; font-size: 17px; }
+
+.bandeau button {
+  padding: 7px 12px;
+  font: inherit;
+  font-size: 13px;
+  color: #fff;
+  background: #2563eb;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.bandeau p { margin: 8px 0 0; font-size: 12px; color: #cbd; line-height: 1.4; }
+.bandeau p:empty { display: none; }
+.bandeau .aide { color: #99a; }
+
+/* sur un petit écran le bandeau prend moins de place */
+@media (max-width: 600px), (max-height: 500px) {
+  .bandeau { top: 8px; left: 8px; right: 8px; max-width: none; padding: 8px 10px; }
+  .bandeau h1 { font-size: 15px; margin: 2px 0 6px; }
+  .bandeau .aide { display: none; }
+}
