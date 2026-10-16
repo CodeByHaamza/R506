@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TD2 - Exo 2 - Babylon.js</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- Babylon.js, son chargeur glTF et le moteur physique Havok, depuis un CDN -->
+<script src="https://cdn.jsdelivr.net/npm/babylonjs@9.28.0/babylon.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/babylonjs-loaders@9.28.0/babylon.glTFFileLoader.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babylonjs/havok@1.3.14/lib/umd/HavokPhysics_umd.js"></script>
+</head>
+<body>
+
+<canvas id="scene"></canvas>
+
+<div class="bandeau">
+  <a href="../../">&lsaquo; Retour aux exercices</a>
+  <h1>Exercice 2 - Babylon.js</h1>
+  <p class="contexte">
+    Chamboule-tout de la fête foraine : fais tomber toutes les caisses du comptoir.
+    Clique ou touche l'écran pour lancer une balle, glisse pour tourner autour du stand.
+  </p>
+  <div class="choix">
+    <button id="rejouer">Rejouer</button>
+    <button id="capteurs" class="secondaire">Activer les capteurs</button>
+  </div>
+  <p id="score"></p>
+  <p id="infos"></p>
+  <p class="credits">
+    Forain : <a href="https://sketchfab.com/3d-models/joker-persona-5-playstation-4-2b13af94c70f41dc865e691a3002bdd7">Joker</a>
+    par <a href="https://sketchfab.com/oscar3dmodel">雨宮レン</a> (CC-BY 4.0), le modèle de l'Exo 1.
+    Texture des caisses : exemples de <a href="https://threejs.org">three.js</a>.
+  </p>
+</div>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
