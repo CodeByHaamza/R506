@@ -1,0 +1,79 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  /* sans caméra on voit un dégradé ciel / sol */
+  background: linear-gradient(#1e3a5f 0%, #3b6b8f 50%, #2b2f24 50%, #15170f 100%);
+  font-family: system-ui, sans-serif;
+}
+
+/* la vidéo remplit l'écran, quitte à être rognée (comme l'appareil photo) */
+#video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+}
+
+#scene canvas {
+  display: block;
+  touch-action: none;
+}
+
+/* petit bandeau par-dessus la vidéo */
+.bandeau {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  max-width: 340px;
+  padding: 10px 14px;
+  color: #e8eaed;
+  background: rgba(15, 17, 21, 0.7);
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.bandeau a { color: #6ea0ff; text-decoration: none; font-size: 13px; }
+.bandeau h1 { margin: 4px 0 8px; font-size: 17px; }
+
+.bandeau button {
+  padding: 7px 12px;
+  font: inherit;
+  font-size: 13px;
+  color: #fff;
+  background: #2563eb;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.bandeau p { margin: 6px 0 0; font-size: 12px; color: #cbd; line-height: 1.4; }
+.bandeau p:empty { display: none; }
+.bandeau #vise { font-size: 14px; font-weight: 600; color: #fde68a; }
+
+/* la mini-carte : la carte 2D du "compas" */
+#minicarte {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  width: 170px;
+  height: 170px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#minicarte .leaflet-control-attribution { font-size: 8px; }
+
+@media (max-width: 600px) {
+  .bandeau { top: 8px; left: 8px; right: 8px; padding: 8px 10px; }
+  .bandeau h1 { font-size: 15px; margin: 2px 0 6px; }
+  #minicarte { width: 130px; height: 130px; left: 8px; bottom: 8px; }
+}

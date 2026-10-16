@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TD3 - Exo 2 - Objets géolocalisés</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="style.css">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js"
+  }
+}
+</script>
+</head>
+<body>
+
+<!-- le flux de la caméra, derrière la scène three.js transparente -->
+<video id="video" autoplay playsinline muted></video>
+<div id="scene"></div>
+
+<div class="bandeau">
+  <a href="../../">&lsaquo; Retour aux exercices</a>
+  <h1>Exercice 2 - Objets géolocalisés</h1>
+  <button id="demarrer">Démarrer la caméra et les capteurs</button>
+  <p id="infos">Les objets sont placés autour de toi selon leur vraie position : bornes N / E / S / O à 25 m,
+    commerces OpenStreetMap à moins de 400 m, et la direction de quelques villes.</p>
+  <p id="etat"></p>
+  <p id="position"></p>
+  <p id="cap"></p>
+  <p id="vise"></p>
+</div>
+
+<div id="minicarte"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script type="module" src="script.js"></script>
+</body>
+</html>
