@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b10">
+<title>TD4 - Ninjutsu</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap">
+<link rel="stylesheet" href="style.css">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js"
+  }
+}
+</script>
+<!-- onnxruntime-web : fait tourner le modèle de détection dans le navigateur -->
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.29.0/dist/ort.min.js"></script>
+</head>
+<body>
+
+<!-- la vidéo n'est pas affichée : elle est redessinée dans le canvas avec les effets -->
+<video id="video" playsinline muted></video>
+<canvas id="scene"></canvas>
+<div id="calque3d"></div>
+
+<header class="barre">
+  <a class="retour" href="../../" aria-label="Retour aux exercices">&lsaquo;</a>
+  <h1><span class="kanji">忍術</span> Ninjutsu</h1>
+  <button id="btnEncyclo" type="button" title="Encyclopédie des signes et des jutsus">📜</button>
+  <button id="btnCamera" type="button" title="Changer de caméra">🔄</button>
+  <button id="btnSon" type="button" aria-pressed="false" title="Couper le son">🔊</button>
+</header>
+
+<!-- le signe que le modèle voit en ce moment -->
+<div id="signeVu" class="signe-vu" aria-live="polite">
+  <span id="vuKanji" class="kanji"></span>
+  <span id="vuNom"></span>
+  <div class="jauge"><div id="vuScore"></div></div>
+  <span id="vuTenu" class="tenu"></span>
+</div>
+
+<div id="enCours" class="en-cours"></div>
+
+<div id="guide" class="guide" hidden>
+  <p class="titre">Entraînement : <b id="guideNom"></b></p>
+  <div id="guideSuite" class="suite"></div>
+  <p id="guideProchain" class="prochain"></p>
+  <button id="btnFinGuide" type="button">Arrêter l'entraînement</button>
+</div>
+
+<div class="bas">
+  <div id="historique" class="historique"></div>
+  <label class="option"><input type="checkbox" id="voirDetection" checked> voir la détection</label>
+</div>
+
+<!-- le nom du jutsu, en grand -->
+<div id="banniere" class="banniere">
+  <p class="type"></p>
+  <p class="kanji"></p>
+  <p class="nom"></p>
+</div>
+
+<div id="accueil" class="ecran">
+  <div class="fiche">
+    <p class="grand-kanji">忍</p>
+    <h2>Ninjutsu</h2>
+    <p class="sous-titre">Projet du TD4 · Hamza Karrouchi · BUT INFO 3</p>
+    <p>Fais les signes de Naruto devant la caméra : un modèle d'intelligence artificielle
+      les reconnaît, et le bon enchaînement lance l'un des 52 jutsus. Boule de feu, Chidori,
+      Rasengan, clones, invocations, mur de terre, Tsukuyomi, Amaterasu…</p>
+    <ul>
+      <li>Mains bien visibles, à hauteur de poitrine, dans un endroit éclairé.</li>
+      <li>Tiens chaque signe une demi-seconde : un « toc » le valide.</li>
+      <li>Quelques jutsus n'ont qu'un signe : tiens-le 2,5 secondes.</li>
+      <li>Pris dans un genjutsu ? Fais le signe du Bélier : « Kai ! ».</li>
+      <li>L'encyclopédie 📜 donne les signes et les enchaînements, avec un mode entraînement.</li>
+    </ul>
+    <button id="btnDemarrer" class="principal" type="button">Ouvrir la caméra</button>
+    <button id="btnEncycloAccueil" type="button">Voir l'encyclopédie</button>
+    <p id="etat" class="etat" role="status"></p>
+    <p class="credits">
+      Détection : modèle <a href="https://github.com/Kazuhito00/NARUTO-HandSignDetection">NARUTO-HandSignDetection</a>
+      de Kazuhito Takahashi (licence MIT). Détourage : MediaPipe (Apache 2.0).
+      NARUTO © Masashi Kishimoto / Shueisha. Projet étudiant non officiel.
+    </p>
+  </div>
+</div>
+
+<div id="encyclo" class="ecran" hidden>
+  <div class="parchemin">
+    <header>
+      <h2>Encyclopédie ninja</h2>
+      <p id="bilan" class="discret"></p>
+      <button id="btnFermerEncyclo" type="button" aria-label="Fermer">✕</button>
+    </header>
+    <div class="onglets" role="tablist">
+      <button type="button" role="tab" data-onglet="signes" aria-controls="listeSignes" aria-selected="true">Les 14 signes</button>
+      <button type="button" role="tab" data-onglet="jutsus" aria-controls="panneauJutsus" aria-selected="false">Les jutsus</button>
+    </div>
+    <div id="listeSignes" class="liste" role="tabpanel"></div>
+    <div id="panneauJutsus" role="tabpanel" hidden>
+      <div id="familles" class="familles"></div>
+      <div id="listeJutsus" class="liste"></div>
+    </div>
+    <p class="discret">Photos de référence des signes :
+      <a href="https://github.com/Kazuhito00/NARUTO-HandSignDetection/blob/main/README_EN.md#kind-of-hand-sign">dépôt du modèle</a>.</p>
+  </div>
+</div>
+
+<p id="message" class="message" role="status" hidden></p>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

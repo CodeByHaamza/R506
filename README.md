@@ -40,6 +40,7 @@ Les sujets des TD sont publiés sur le dépôt de l'enseignant :
 | TD1 | Géolocalisation et cartographie Leaflet | [`CartoTD1/`](CartoTD1/) | [x] |
 | TD2 | 3D : Three.js et Babylon.js | [`CartoTD2/`](CartoTD2/) | [x] |
 | TD3 | Globe 3D et Leaflet, objets géolocalisés dans la caméra | [`CartoTD3/`](CartoTD3/) | [x] |
+| TD4 | Projet IA : les signes de Naruto reconnus à la caméra | [`CartoTD4/`](CartoTD4/) | [x] |
 
 Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé
 
@@ -63,6 +64,58 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé
 |---|---|---|
 | [Exo 1](CartoTD3/Exo1/) | Three.js + Leaflet : globe de rayon 1 texturé, lat/lon vers XYZ et l'inverse, ma position, drapeaux de 16 pays. Leaflet → 3D avec un `L.Handler` (clic sur la carte ou un drapeau, le globe tourne vers l'endroit), 3D → Leaflet avec un `Raycaster` (clic sur le globe ou un drapeau, la carte se recentre). Autres données : fiche du pays et géocodage inverse Nominatim | [x] |
 | [Exo 2](CartoTD3/Exo2/) | Objets géolocalisés dans la caméra : flux vidéo (`getUserMedia`), `watchPosition`, `deviceorientationabsolute` vers la caméra Three.js. Bornes N / E / S / O à 25 m pour vérifier la boussole, lieux OpenStreetMap à moins de 400 m (API Overpass), direction et distance de villes lointaines, objet visé au centre de l'écran, mini-carte Leaflet avec la direction du regard (compas 2D) | [x] |
+
+### Le projet du TD4 : Ninjutsu
+
+[**Jouer**](https://codebyhaamza.github.io/R506/CartoTD4/Ninjutsu/) ·
+[code](CartoTD4/Ninjutsu/)
+
+Le TD4 porte sur l'intelligence artificielle. Le projet : faire les signes de
+Naruto devant la caméra, et lancer le jutsu correspondant quand l'enchaînement est
+le bon.
+
+- **Reconnaissance des signes** : le modèle YOLOX-Nano du projet
+  [NARUTO-HandSignDetection](https://github.com/Kazuhito00/NARUTO-HandSignDetection)
+  (Kazuhito Takahashi, licence MIT), déjà entraîné sur les 12 signes du zodiaque,
+  le signe de l'eau (壬) et les mains jointes. Il tourne dans le navigateur avec
+  [onnxruntime-web](https://onnxruntime.ai/docs/tutorials/web/), environ 50 ms par
+  image sur un PC.
+- **Des signes aux jutsus** (`js/sequence.js`) : un signe n'est validé que s'il est
+  vu sur deux images d'affilée, puis il rejoint l'historique. Un jutsu part quand
+  l'historique se termine par son enchaînement. Si cet enchaînement est aussi le
+  début d'un plus long (le Rasengan, puis le Rasenshuriken), on attend 1,5 s la
+  suite. Les jutsus à un seul signe (l'ombre de Shikamaru, le Rat) se lancent en
+  tenant le signe 2,5 s. Le signe du Bélier rompt les genjutsu (« Kai ! »).
+- **52 jutsus**, avec leurs vrais enchaînements, relevés dans
+  [Narutopedia](https://naruto.fandom.com) : Boule de feu, Chidori, Dragon aqueux
+  (44 signes), Grande cascade (18 signes), Muraille de terre, Prison de bois,
+  Invocation, Edo Tensei, Sceau du mal (19 signes)… Le Rasengan, le Rasenshuriken,
+  Kirin et les techniques du Sharingan n'ont pas de signes dans l'anime : leurs
+  enchaînements sont inventés, et l'encyclopédie le dit.
+- **Un effet par jutsu**, dessiné en Canvas 2D par-dessus la vidéo (particules,
+  éclairs fractals, vagues, bandes d'image décalées pour le vent), rangés par
+  élément dans `js/effets/`. Le Rasengan est une vraie sphère 3D en Three.js
+  (`js/rasengan.js`), placée dans la main grâce à la boîte de détection.
+- **Détourage de la personne** avec MediaPipe : les clones sont de vrais clones,
+  le dieu de la mort apparaît derrière toi, la permutation te remplace par une bûche.
+- **Encyclopédie** : les 14 signes (avec ta propre photo, prise dès que tu réussis
+  un signe) et les 52 jutsus filtrés par famille, avec un mode entraînement qui
+  montre le prochain signe à faire.
+- **Sons** fabriqués avec Web Audio, et le nom du jutsu dit à voix haute en
+  japonais (Web Speech). On peut remplacer quatre sons par des fichiers, voir
+  [`sons/LISEZMOI.md`](CartoTD4/Ninjutsu/sons/LISEZMOI.md).
+
+| Fichier | Rôle |
+|---|---|
+| [`js/main.js`](CartoTD4/Ninjutsu/js/main.js) | Caméra, boucles de détection et d'affichage, interface |
+| [`js/detection.js`](CartoTD4/Ninjutsu/js/detection.js) | Préparation de l'image et lecture du modèle YOLOX |
+| [`js/sequence.js`](CartoTD4/Ninjutsu/js/sequence.js) | Validation des signes, historique, jutsu terminé, signe tenu |
+| [`js/donnees.js`](CartoTD4/Ninjutsu/js/donnees.js) | Les 14 signes et les 52 jutsus |
+| [`js/effets/`](CartoTD4/Ninjutsu/js/effets/) | Les effets, par élément (feu, eau, foudre, vent, terre, chakra, ninjutsu, genjutsu) |
+| [`js/rasengan.js`](CartoTD4/Ninjutsu/js/rasengan.js) | Le Rasengan en 3D |
+| [`js/silhouette.js`](CartoTD4/Ninjutsu/js/silhouette.js) | Le détourage MediaPipe |
+| [`js/son.js`](CartoTD4/Ninjutsu/js/son.js) | Les sons et la voix |
+| [`js/encyclopedie.js`](CartoTD4/Ninjutsu/js/encyclopedie.js) | L'encyclopédie |
 
 ## Choix techniques
 
@@ -190,9 +243,11 @@ Les liens vers la documentation des API utilisées, en majorité
 ├── CartoTD2/
 │   ├── Exo1/           index.html + script.js + style.css + assets/ (modèles glTF)
 │   └── Exo2/           index.html + script.js + style.css + assets/ (texture)
-└── CartoTD3/
-    ├── Exo1/           index.html + script.js + style.css + assets/ (Terre)
-    └── Exo2/           index.html + script.js + style.css
+├── CartoTD3/
+│   ├── Exo1/           index.html + script.js + style.css + assets/ (Terre)
+│   └── Exo2/           index.html + script.js + style.css
+└── CartoTD4/
+    └── Ninjutsu/       index.html + style.css + js/ (modules) + modele/ + sons/
 ```
 
 Chaque exercice est autonome dans son dossier `CartoTDn/Exok/` avec son
