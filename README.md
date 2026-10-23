@@ -116,6 +116,24 @@ le bon.
 | [`js/silhouette.js`](CartoTD4/Ninjutsu/js/silhouette.js) | Le détourage MediaPipe |
 | [`js/son.js`](CartoTD4/Ninjutsu/js/son.js) | Les sons et la voix |
 | [`js/encyclopedie.js`](CartoTD4/Ninjutsu/js/encyclopedie.js) | L'encyclopédie |
+| [`js/journal.js`](CartoTD4/Ninjutsu/js/journal.js) | Le journal de bord (débogage sur téléphone) |
+
+**Sur téléphone**, la page se rechargeait toute seule : à court de mémoire, le
+navigateur tue l'onglet puis le recharge. Pour l'alléger :
+
+- onnxruntime-web en version `wasm` seule : la version complète embarque aussi le
+  WebGPU, soit 27 Mo de WebAssembly au lieu de 13 ;
+- le détourage MediaPipe (11 Mo) et la scène 3D du Rasengan ne sont chargés qu'au
+  premier jutsu qui en a besoin, et le détourage est désactivé sous 4 Go de mémoire ;
+- sur téléphone, les canvas sont en densité 1 (et non ×2 ou ×3), la détection est
+  limitée à 12 images par seconde, et la caméra est coupée quand l'appli passe en
+  arrière-plan.
+
+Le **journal de bord** (bouton sur l'accueil, ou `?journal` dans l'adresse) garde
+ce qui s'est passé dans le `localStorage`, même après un rechargement : appareil,
+temps de chargement, images par seconde, temps de détection, mémoire, jutsus,
+erreurs. Un « battement » toutes les 5 s permet de savoir, au chargement suivant,
+si la page précédente a planté (et si c'était en arrière-plan ou pendant le jeu).
 
 ## Choix techniques
 

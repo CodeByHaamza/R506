@@ -10,14 +10,18 @@ const CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35";
 export class Silhouette {
   constructor() {
     this.pret = false;
+    this.enChargement = false;
     this.masque = document.createElement("canvas");   // le masque, en image
     this.personne = document.createElement("canvas"); // la personne seule, sur fond transparent
     this.trou = document.createElement("canvas");     // le décor sans la personne
     this.bouche = document.createElement("canvas");   // de quoi boucher le trou
   }
 
-  async charger() {
-    // chargé seulement quand on en a besoin : la bibliothèque pèse 11 Mo
+  // chargé seulement au premier jutsu qui en a besoin : la bibliothèque pèse 11 Mo
+  // delegue : "GPU" (plus rapide) ou "CPU" (moins de mémoire, pour les téléphones)
+  async charger(delegue) {
+    if (this.pret || this.enChargement) return;
+    this.enChargement = true;
     const { FilesetResolver, ImageSegmenter } = await import(CDN + "/vision_bundle.mjs");
     const fichiers = await FilesetResolver.forVisionTasks(CDN + "/wasm");
     const options = delegate => ({
@@ -27,7 +31,7 @@ export class Silhouette {
       outputConfidenceMasks: true
     });
     try {
-      this.segmenteur = await ImageSegmenter.createFromOptions(fichiers, options("GPU"));
+      this.segmenteur = await ImageSegmenter.createFromOptions(fichiers, options(delegue));
     } catch {
       this.segmenteur = await ImageSegmenter.createFromOptions(fichiers, options("CPU"));
     }

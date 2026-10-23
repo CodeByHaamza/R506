@@ -310,9 +310,13 @@ export const NINJUTSUS = {
       ctx.filter = "none";
       // les fissures, seulement sur la personne : on les dessine à part puis on les découpe
       const calque = s.calque;
-      calque.width = e.l;
-      calque.height = e.h;
+      if (calque.width !== e.l || calque.height !== e.h) {
+        calque.width = e.l;
+        calque.height = e.h;
+      }
       const k = calque.getContext("2d");
+      k.globalCompositeOperation = "source-over";
+      k.clearRect(0, 0, e.l, e.h);
       k.strokeStyle = "rgba(25, 12, 12, 0.85)";
       k.lineWidth = 2.5;
       s.fissures.forEach(points => tracer(k, points));

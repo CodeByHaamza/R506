@@ -18,8 +18,10 @@
   }
 }
 </script>
-<!-- onnxruntime-web : fait tourner le modèle de détection dans le navigateur -->
-<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.29.0/dist/ort.min.js"></script>
+<!-- onnxruntime-web : fait tourner le modèle de détection dans le navigateur.
+     La version "wasm" seule : la version complète charge aussi le WebGPU (27 Mo au lieu de 13),
+     trop lourd pour un téléphone, qui finissait par recharger la page. -->
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.29.0/dist/ort.wasm.min.js"></script>
 </head>
 <body>
 
@@ -82,6 +84,7 @@
     </ul>
     <button id="btnDemarrer" class="principal" type="button">Ouvrir la caméra</button>
     <button id="btnEncycloAccueil" type="button">Voir l'encyclopédie</button>
+    <button id="btnJournal" class="discret-bouton" type="button">Journal de bord (si la page s'est rechargée toute seule)</button>
     <p id="etat" class="etat" role="status"></p>
     <p class="credits">
       Détection : modèle <a href="https://github.com/Kazuhito00/NARUTO-HandSignDetection">NARUTO-HandSignDetection</a>
@@ -108,7 +111,21 @@
       <div id="listeJutsus" class="liste"></div>
     </div>
     <p class="discret">Photos de référence des signes :
-      <a href="https://github.com/Kazuhito00/NARUTO-HandSignDetection/blob/main/README_EN.md#kind-of-hand-sign">dépôt du modèle</a>.</p>
+      <a href="https://github.com/Kazuhito00/NARUTO-HandSignDetection/blob/main/README_EN.md#kind-of-hand-sign">dépôt du modèle</a>.
+      · <button id="btnJournalEncyclo" class="lien" type="button">journal de bord</button></p>
+  </div>
+</div>
+
+<!-- le journal de bord : ce qui s'est passé, même après un rechargement de la page -->
+<div id="journal" class="ecran" hidden>
+  <div class="fiche">
+    <h2>Journal de bord</h2>
+    <p class="sous-titre">Il garde ce qui s'est passé, même si la page s'est rechargée.
+      Copie-le et envoie-le pour qu'on comprenne le problème.</p>
+    <pre id="journalTexte" class="journal"></pre>
+    <button id="btnCopierJournal" class="principal" type="button">Copier le journal</button>
+    <button id="btnViderJournal" type="button">Effacer</button>
+    <button id="btnFermerJournal" type="button">Fermer</button>
   </div>
 </div>
 

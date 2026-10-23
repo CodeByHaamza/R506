@@ -134,8 +134,11 @@ export const GENJUTSUS = {
       const cy = e.h * 0.45;
       const rayonMax = Math.max(e.l, e.h) * 0.75;
       // une copie de l'image de cette frame, qu'on va faire tourner par anneaux
-      s.copie.width = ctx.canvas.width;
-      s.copie.height = ctx.canvas.height;
+      // (on ne change sa taille que si besoin : changer la taille d'un canvas réalloue sa mémoire)
+      if (s.copie.width !== ctx.canvas.width || s.copie.height !== ctx.canvas.height) {
+        s.copie.width = ctx.canvas.width;
+        s.copie.height = ctx.canvas.height;
+      }
       s.copie.getContext("2d").drawImage(ctx.canvas, 0, 0);
       // des anneaux de plus en plus petits, tournés de plus en plus vers le centre ;
       // la copie est agrandie (1,5) pour que la rotation ne laisse jamais de coin vide

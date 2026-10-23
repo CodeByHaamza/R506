@@ -36,7 +36,7 @@ export class Effets {
   lancer(nom, e) {
     const def = EFFETS[nom];
     if (!def) return null;
-    const effet = { def, debut: e.temps, fin: e.temps + def.duree * 1000, etat: {} };
+    const effet = { nom, def, debut: e.temps, fin: e.temps + def.duree * 1000, etat: {} };
     if (def.depart) def.depart(effet.etat, e, this.particules);
     this.actifs.push(effet);
     return def;

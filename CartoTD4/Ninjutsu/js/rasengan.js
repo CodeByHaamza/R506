@@ -34,9 +34,10 @@ function rondFlou() {
 }
 
 export class Rasengan3D {
-  constructor(conteneur) {
+  // pixels : la densité de pixels (1 sur téléphone, pour économiser la mémoire)
+  constructor(conteneur, pixels) {
     this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(pixels);
     conteneur.appendChild(this.renderer.domElement);
 
     this.scene = new THREE.Scene();

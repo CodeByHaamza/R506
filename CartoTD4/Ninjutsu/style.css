@@ -303,6 +303,27 @@ button.principal { color: #1a0d02; background: var(--orange); border-color: var(
 .fiche-jutsu button { width: 100%; margin-top: 6px; color: #fff; background: #9a3412; border-color: #9a3412; }
 
 
+/* ---- journal de bord ---- */
+
+#journal { z-index: 25; }
+.journal {
+  max-height: 55vh;
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+  font: 11px/1.45 ui-monospace, Consolas, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #d4d4d8;
+  background: #0a0a0f;
+  border: 1px solid var(--ligne);
+  border-radius: 10px;
+  user-select: text;
+}
+button.discret-bouton { min-height: 36px; font-size: 12px; font-weight: 500; color: var(--doux); background: transparent; }
+button.lien { min-height: 0; padding: 0; font: inherit; color: #9a3412; text-decoration: underline; background: none; border: none; }
+
+
 /* ---- message temporaire ---- */
 
 .message {

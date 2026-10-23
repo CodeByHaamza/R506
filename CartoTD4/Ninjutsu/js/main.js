@@ -17,6 +17,9 @@ import { Effets } from "./effets/index.js";
 import { Rasengan3D } from "./rasengan.js";
 import { activerSon, couperSon, jouer, crier } from "./son.js";
 import { pastille, afficherSignes, afficherJutsus, LISTE_FAMILLES } from "./encyclopedie.js";
+import { noter, demarrerJournal, battre, memoire, texteDuJournal, viderJournal, surveillerWebGL } from "./journal.js";
+
+demarrerJournal();
 
 const el = id => document.getElementById(id);
 const video = el("video");
@@ -27,10 +30,18 @@ const detecteur = new DetecteurDeSignes();
 const sequence = new Sequence();
 const silhouette = new Silhouette();
 const effets = new Effets();
-const rasengan = new Rasengan3D(el("calque3d"));
+let rasengan = null; // la scène 3D n'est créée qu'au premier Rasengan
+
+// Un téléphone qui manque de mémoire tue l'onglet et le recharge : on y dessine en
+// résolution normale (pas ×2 ou ×3), et le détourage passe par le processeur.
+const TELEPHONE = matchMedia("(pointer: coarse)").matches;
+const PIXELS = TELEPHONE ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+// le détourage ajoute 11 Mo et un contexte graphique : pas sur les appareils à moins de 4 Go
+const DETOURAGE = !(navigator.deviceMemory && navigator.deviceMemory < 4);
 
 const OUBLI_NORMAL = 4000;  // ms sans signe avant d'oublier l'enchaînement
 const OUBLI_GUIDE = 10000;  // plus long pendant l'entraînement
+const ECART_DETECTION = 80; // ms au moins entre deux détections (12 par seconde au plus)
 
 let flux = null;
 let deFace = true;    // caméra de face : l'image est affichée en miroir
@@ -39,6 +50,32 @@ let derniere = null;  // dernière détection fiable { signe, score, boite, temp
 let guide = null;     // le jutsu de l'entraînement en cours
 let enAttente = null; // un jutsu fini, qu'on lance si le joueur ne continue pas : { jutsu, depuis }
 let secousse = 0;
+
+
+// ---- le journal : ce qu'on note pour comprendre un rechargement ou une lenteur ----
+
+const stats = { images: 0, detections: 0, tempsDetection: 0, erreurs: 0, depuis: performance.now() };
+
+// ce que fait l'appli à cet instant, gardé à chaque battement du journal
+battre(() => (enMarche ? "caméra " + (flux ? "ouverte" : "fermée") : "accueil")
+  + ", effets en cours : " + (effets.actifs.map(a => a.nom).join(" ") || "aucun")
+  + ", particules : " + effets.particules.liste.length
+  + ", détourage : " + (silhouette.pret ? "chargé" : silhouette.enChargement ? "en chargement" : "non")
+  + ", JS " + memoire());
+
+noter("info", "réglages : " + (TELEPHONE ? "téléphone" : "ordinateur") + ", densité de pixels " + PIXELS
+  + ", détourage " + (DETOURAGE ? "possible" : "désactivé (moins de 4 Go)"));
+
+// toutes les 10 s pendant le jeu : images par seconde, temps de détection, mémoire
+setInterval(() => {
+  if (!enMarche || document.hidden) return;
+  const secondes = (performance.now() - stats.depuis) / 1000;
+  noter("stats", Math.round(stats.images / secondes) + " img/s · détection "
+    + (stats.detections ? Math.round(stats.tempsDetection / stats.detections) + " ms" : "-")
+    + " (" + (stats.detections / secondes).toFixed(1) + "/s) · JS " + memoire()
+    + " · effets " + effets.actifs.length + " · particules " + effets.particules.liste.length);
+  Object.assign(stats, { images: 0, detections: 0, tempsDetection: 0, depuis: performance.now() });
+}, 10000);
 
 
 // ---- ce qu'on garde d'une visite à l'autre (localStorage) ----
@@ -74,6 +111,8 @@ async function ouvrirCamera() {
   });
   video.srcObject = flux;
   await video.play();
+  const reglages = flux.getVideoTracks()[0].getSettings();
+  noter("caméra", "ouverte : " + reglages.width + "x" + reglages.height + ", " + (reglages.facingMode || (deFace ? "face" : "arrière")));
 }
 
 
@@ -83,7 +122,7 @@ async function ouvrirCamera() {
 const cadre = { l: 0, h: 0, echelle: 1, x: 0, y: 0, largeur: 0, hauteur: 0 };
 
 function calculerCadre() {
-  const r = Math.min(window.devicePixelRatio || 1, 2);
+  const r = PIXELS;
   cadre.l = window.innerWidth;
   cadre.h = window.innerHeight;
   if (toile.width !== Math.round(cadre.l * r) || toile.height !== Math.round(cadre.h * r)) {
@@ -153,6 +192,7 @@ function rendre(temps) {
   const dt = Math.min((temps - tempsPrecedent) / 1000, 0.05);
   tempsPrecedent = temps;
   if (!enMarche || video.readyState < 2) return;
+  stats.images++;
 
   calculerCadre();
   const e = contexte(temps, dt);
@@ -179,7 +219,7 @@ function rendre(temps) {
   ctx.restore();
 
   effets.avancer(dt, temps);
-  if (rasengan.actif) rasengan.placer(e.main.x, e.main.y); // le Rasengan suit la main
+  if (rasengan && rasengan.actif) rasengan.placer(e.main.x, e.main.y); // le Rasengan suit la main
 }
 
 requestAnimationFrame(rendre);
@@ -203,14 +243,21 @@ function dessinerDetection() {
 
 async function boucleDetection() {
   while (enMarche) {
-    if (video.readyState >= 2) {
+    const debut = performance.now();
+    if (video.readyState >= 2 && !document.hidden) {
       try {
-        traiter(await detecteur.detecter(video, video.videoWidth, video.videoHeight));
+        const detection = await detecteur.detecter(video, video.videoWidth, video.videoHeight);
+        stats.detections++;
+        stats.tempsDetection += performance.now() - debut;
+        traiter(detection);
       } catch (erreur) {
-        console.error(erreur);
+        // on note les premières erreurs seulement, pour ne pas remplir le journal
+        if (++stats.erreurs <= 5) noter("ERREUR", "détection : " + erreur.message);
       }
     }
-    await new Promise(suite => requestAnimationFrame(suite));
+    // pas plus de 12 détections par seconde : le téléphone chauffe moins et garde du temps pour l'affichage
+    const reste = ECART_DETECTION - (performance.now() - debut);
+    await new Promise(suite => setTimeout(() => requestAnimationFrame(suite), Math.max(0, reste)));
   }
 }
 
@@ -265,8 +312,24 @@ function declencher(jutsu, maintenant) {
   enAttente = null;
   const e = contexte(maintenant, 0);
   const def = effets.lancer(jutsu.effet, e);
-  if (def.rasengan3d) rasengan.lancer(e.main.x, e.main.y, Math.max(e.main.r * 0.9, 40));
-  if (def.silhouette && !silhouette.pret) message("Le détourage se charge encore : effet simplifié.");
+  noter("jutsu", jutsu.id + " (effet " + jutsu.effet + ") · JS " + memoire());
+  if (def.rasengan3d) {
+    if (!rasengan) {
+      rasengan = new Rasengan3D(el("calque3d"), PIXELS);
+      surveillerWebGL(rasengan.renderer.domElement, "Rasengan 3D");
+      noter("info", "scène 3D du Rasengan créée");
+    }
+    rasengan.lancer(e.main.x, e.main.y, Math.max(e.main.r * 0.9, 40));
+  }
+  // le détourage ne se charge qu'au premier jutsu qui en a besoin
+  if (def.silhouette && DETOURAGE && !silhouette.pret && !silhouette.enChargement) {
+    message("Chargement du détourage (une seule fois) : effet simplifié pour cette fois.");
+    const debut = performance.now();
+    noter("détourage", "chargement (" + (TELEPHONE ? "CPU" : "GPU") + ")…");
+    silhouette.charger(TELEPHONE ? "CPU" : "GPU")
+      .then(() => noter("détourage", "prêt en " + Math.round(performance.now() - debut) + " ms · JS " + memoire()))
+      .catch(erreur => noter("ERREUR", "détourage indisponible : " + erreur.message));
+  }
 
   jouer("jutsu");
   if (def.sonDepart) jouer(def.sonDepart);
@@ -389,15 +452,20 @@ async function demarrer() {
   try {
     await ouvrirCamera();
   } catch (erreur) {
+    noter("ERREUR", "caméra : " + erreur.name + " " + erreur.message);
     etat("Caméra indisponible : " + erreur.message + ". Il faut l'autoriser, et la page doit être en HTTPS.");
     el("btnDemarrer").disabled = false;
     return;
   }
   if (!detecteur.session) {
     etat("Chargement du modèle de détection (4 Mo)...");
+    const debut = performance.now();
+    noter("modèle", "chargement… · JS " + memoire());
     try {
       await detecteur.charger("modele/yolox_nano_with_post.onnx");
+      noter("modèle", "prêt en " + Math.round(performance.now() - debut) + " ms · JS " + memoire());
     } catch (erreur) {
+      noter("ERREUR", "modèle : " + erreur.message);
       etat("Le modèle n'a pas pu être chargé : " + erreur.message);
       el("btnDemarrer").disabled = false;
       return;
@@ -407,9 +475,53 @@ async function demarrer() {
   el("accueil").hidden = true;
   enMarche = true;
   boucleDetection();
-  // le détourage (clones, permutation, genjutsus) se charge pendant qu'on joue
-  silhouette.charger().catch(erreur => console.warn("Détourage indisponible :", erreur));
 }
+
+// Quand on quitte l'appli (autre onglet, autre application), on rend la caméra :
+// un onglet en arrière-plan qui garde la caméra et beaucoup de mémoire est le premier
+// que le téléphone ferme. On la rouvre au retour.
+document.addEventListener("visibilitychange", () => {
+  if (!enMarche) return;
+  if (document.hidden) {
+    if (flux) flux.getTracks().forEach(piste => piste.stop());
+    flux = null;
+    noter("caméra", "coupée (arrière-plan)");
+  } else {
+    ouvrirCamera().catch(erreur => {
+      noter("ERREUR", "caméra au retour : " + erreur.message);
+      message("Caméra indisponible : " + erreur.message);
+    });
+  }
+});
+
+
+// ---- le journal, à l'écran : pour le copier et l'envoyer ----
+
+function ouvrirJournal() {
+  el("journalTexte").textContent = texteDuJournal() || "(vide)";
+  el("journal").hidden = false;
+  el("journalTexte").scrollTop = el("journalTexte").scrollHeight; // les dernières lignes
+}
+
+el("btnJournal").addEventListener("click", ouvrirJournal);
+el("btnJournalEncyclo").addEventListener("click", ouvrirJournal);
+el("btnFermerJournal").addEventListener("click", () => el("journal").hidden = true);
+el("btnViderJournal").addEventListener("click", () => {
+  viderJournal();
+  ouvrirJournal();
+});
+el("btnCopierJournal").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(texteDuJournal());
+    message("Journal copié : colle-le dans ton message.");
+  } catch {
+    // pas de presse-papiers : on sélectionne le texte pour un copier à la main
+    getSelection().selectAllChildren(el("journalTexte"));
+    message("Sélectionné : fais « Copier » à la main.");
+  }
+});
+// ?journal dans l'adresse ouvre directement le journal
+if (new URLSearchParams(location.search).has("journal")) ouvrirJournal();
 
 
 // ---- l'encyclopédie et l'entraînement ----
