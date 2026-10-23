@@ -18,6 +18,8 @@ html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
+  /* sur téléphone, tirer l'écran vers le bas rechargeait la page : on bloque ce geste */
+  overscroll-behavior: none;
   background: var(--fond);
   color: var(--texte);
   font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -43,6 +45,7 @@ button.principal { color: #1a0d02; background: var(--orange); border-color: var(
 
 #video { display: none; }
 #scene, #calque3d, #calque3d canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+#scene { touch-action: none; } /* pas de zoom ni de défilement en touchant la vidéo */
 #calque3d { pointer-events: none; }
 
 
